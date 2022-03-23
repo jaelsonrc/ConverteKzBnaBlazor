@@ -1,0 +1,89 @@
+﻿@page "/"
+
+<PageTitle>Index</PageTitle>
+
+
+<RadzenCard>
+    <div>
+         <h3 class="h5">Painel</h3>
+         <RadzenButton Click=@(args => OnClick("Light icon button")) Icon="refresh" ButtonStyle="ButtonStyle.Light" />
+        </div>
+      <hr />
+
+    @if(status == StatusEnum.Finalizado)
+    {
+                <div class="row">
+
+            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+
+                <label>Selecione o banco</label>
+                <RadzenDropDown AllowClear="true" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="w-100"
+                                Placeholder="Selecione..." Data=@bancos Change="@OnChange" />
+
+            </div>
+
+            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+
+                <label>Taxa %</label>
+                <RadzenNumeric TValue="decimal" Format="0.00" @bind-Value=@model.Taxa Class="mr-1" />
+
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+
+                <label>Valor em KZ</label>
+                <RadzenNumeric TValue="decimal" Format="0.00" @bind-Value=@model.kwanza Class="mr-1" />
+
+            </div>
+
+            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+
+                <label>Valor em Euro</label>
+                <RadzenNumeric TValue="decimal" Format="0.00" @bind-Value=@model.Euro Class="mr-1" />
+
+            </div>
+
+
+        </div>
+        <br/>
+        <h1>Valor do EURO: @model.kwanzaEuro KZ</h1>
+        <h1>Valor do EURO C/TAXA: @model.kwanzaEuroTaxa KZ</h1>
+        <h1></h1>
+
+    }else if(status == StatusEnum.Carregando)
+    {
+          <h1>Processando...</h1>
+    }
+    else
+    {
+          <h1>Errao ao carregar os dados...</h1>
+    }
+
+
+
+</RadzenCard>
+
+<div id="conteudoBNA" style="display:none"></div>
+
+@code {
+
+    IEnumerable<string> bancos;
+    Eurokwanza model = new Eurokwanza();
+    StatusEnum status = StatusEnum.Finalizado;
+
+    void OnChange(object value)
+    {
+
+        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value.ToString();
+
+        Console.WriteLine($"Value changed to {str}");
+    }
+    
+    void OnClick(string buttonName)
+    {
+        Console.WriteLine($"{buttonName} clicked");
+    }
+  }
