@@ -2,7 +2,8 @@
 
 Especificações
 
-. WebApp
+. Radzen Components
+. Blazor WebApp
 . Requesições externas
 . Interoperabilidade com Javascript/JQUERY
 . Manipulaçao do DOM via JQUERY
