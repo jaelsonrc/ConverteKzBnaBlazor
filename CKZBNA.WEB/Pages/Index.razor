@@ -118,9 +118,18 @@
 
     async Task CarregarDataAtaulizacao()
     {
-        var str = await JS.InvokeAsync<string>("ObterDataActualizacao");
-        if (str?.Length > 0)
-            dataActualizacao = str;
+        try
+        {
+            var str = await JS.InvokeAsync<string>("ObterDataActualizacao");
+            if (str?.Length > 0)
+                dataActualizacao = str;
+        }
+        catch (Exception ex)
+        {
+            msg += " linha 129 - " + ex.Message;
+            throw ex;
+
+        }
     }
 
     async Task CarregarTaxa()
@@ -133,7 +142,8 @@
         }
         catch (Exception ex)
         {
-            msg += " linha 133 - " + ex.Message;
+            msg += " linha 145 - " + ex.Message;
+            throw ex;
 
         }
 
@@ -148,13 +158,16 @@
             {
                 var dado = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(dados[0]);
                 var strHtml = $"{dado["Taxas"]}";
+                Console.WriteLine(strHtml);
+                Console.WriteLine("invoke js");
                 await JS.InvokeVoidAsync("SetDomHtml", strHtml);
+
             }
         }
         catch (Exception ex)
         {
-            msg += " linha 151 - " + ex.Message;
-
+            msg += " linha 169 - " + ex.Message;
+            throw ex;
         }
     }
 
@@ -170,8 +183,8 @@
         }
         catch (Exception ex)
         {
-            msg += " linha 166 - " + ex.Message;
-
+            msg += " linha 186 - " + ex.Message;
+            throw ex;
         }
     }
 
@@ -184,8 +197,8 @@
         }
         catch (Exception ex)
         {
-            msg += " linha 178 - " + ex.Message;
-
+            msg += " linha 200 - " + ex.Message;
+            throw ex;
         }
     }
 
@@ -235,7 +248,8 @@
         }
         catch (Exception ex)
         {
-            msg += " linha 227 - " + ex.Message;
+            msg += " linha 251 - " + ex.Message;
+            throw ex;
 
         }
     }
