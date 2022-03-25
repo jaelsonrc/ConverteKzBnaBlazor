@@ -8,9 +8,9 @@
     @if (status == StatusEnum.Finalizado)
     {
         <div class="row mb-3">
-            <div class="col-12 d-flex align-items-center">
-                <h1 class="m-0">Convert Kwanza BNA</h1>
-                <RadzenButton Click=@(async args => await OnClick()) Class="btn btn-success ml-3"><RadzenIcon Icon="cached" /> Actualizar</RadzenButton>
+            <div class="col-12 d-md-flex align-items-center">
+                <h1 class="m-0 h3">Convert Kwanza BNA <small class="text-muted d-block">Actualizado em @dataActualizacao</small></h1>
+                <RadzenButton Click=@(async args => await OnClick()) Class="btn btn-success ml-md-3 mt-md-0 mt-3"><RadzenIcon Icon="cached" /> Actualizar</RadzenButton>
             </div>
         </div>
 
@@ -43,10 +43,6 @@
 
         <div class="row">
             <div class="12 border-bottom pt-2 pb-2">
-                <p><strong>Data da cotação:</strong> @dataActualizacao</p>
-            </div>
-
-            <div class="12 border-bottom pt-2 pb-2">
                 <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO:</strong> <span class="badge bg-success">@model.kwanzaEuro KZ</span></p>
             </div>
 
@@ -56,7 +52,7 @@
 
             @if (valorCalculado.Length > 0)
             {
-                <div class="12 border-bottom pt-2 pb-2">
+                <div class="12 pt-2">
                     <p><strong>Valor Calculado em:</strong> @valorCalculado</p>
                 </div>
             }
