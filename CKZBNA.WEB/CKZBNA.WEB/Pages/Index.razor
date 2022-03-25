@@ -1,31 +1,32 @@
 ﻿@page "/"
-
+@inject HttpClient Http
+@inject IJSRuntime JS
 <PageTitle>Index</PageTitle>
 
 
 <RadzenCard>
     <div>
-         <h3 class="h5">Painel</h3>
-         <RadzenButton Click=@(args => OnClick("Light icon button")) Icon="refresh" ButtonStyle="ButtonStyle.Light" />
-        </div>
-      <hr />
+        <h3 class="h5">Painel</h3>
+        <RadzenButton Click=@(async args => await OnClick()) Icon="refresh" ButtonStyle="ButtonStyle.Light" />
+    </div>
+    <hr />
 
-    @if(status == StatusEnum.Finalizado)
+    @if (status == StatusEnum.Finalizado)
     {
-                <div class="row">
+        <div class="row">
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
 
                 <label>Selecione o banco</label>
-                <RadzenDropDown AllowClear="true" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="w-100"
-                                Placeholder="Selecione..." Data=@bancos Change="@OnChange" />
+                <RadzenDropDown Name="dpBanco" AllowClear="true" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="w-100"
+                            Placeholder="Selecione..." Data="@bancos" Change="@OnChangeBanco" />
 
             </div>
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
 
                 <label>Taxa %</label>
-                <RadzenNumeric TValue="decimal" Format="0.00" @bind-Value=@model.Taxa Class="mr-1" />
+                <RadzenNumeric TValue="decimal" Format="0.00" @bind-Value=@model.Taxa Class="mr-1" Change="@OnTaxa" />
 
             </div>
 
@@ -35,55 +36,161 @@
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
 
                 <label>Valor em KZ</label>
-                <RadzenNumeric TValue="decimal" Format="0.00" @bind-Value=@model.kwanza Class="mr-1" />
+                <RadzenNumeric TValue="decimal" Format="#,#0.00" Change="@OnKwanza" @bind-Value=@model.kwanza Class="mr-1" />
 
             </div>
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
 
                 <label>Valor em Euro</label>
-                <RadzenNumeric TValue="decimal" Format="0.00" @bind-Value=@model.Euro Class="mr-1" />
+                <RadzenNumeric TValue="decimal" Format="#,#0.00" Change="@OnEuro" @bind-Value=@model.Euro Class="mr-1" />
 
             </div>
 
 
         </div>
-        <br/>
+        <br />
+        <h1>@dataActualizacao</h1>
         <h1>Valor do EURO: @model.kwanzaEuro KZ</h1>
         <h1>Valor do EURO C/TAXA: @model.kwanzaEuroTaxa KZ</h1>
-        <h1></h1>
+        <h1>@valorCalculado</h1>
 
-    }else if(status == StatusEnum.Carregando)
+    }
+    else if (status == StatusEnum.Carregando)
     {
-          <h1>Processando...</h1>
+        <h1>Processando...</h1>
     }
     else
     {
-          <h1>Errao ao carregar os dados...</h1>
+        <h1>Errao ao carregar os dados...</h1>
     }
 
 
 
 </RadzenCard>
 
-<div id="conteudoBNA" style="display:none"></div>
+
 
 @code {
 
     IEnumerable<string> bancos;
+    string banco = string.Empty;
+    string valorCalculado = string.Empty;
     Eurokwanza model = new Eurokwanza();
     StatusEnum status = StatusEnum.Finalizado;
+    string dataActualizacao = string.Empty;
 
-    void OnChange(object value)
+    protected override async Task OnInitializedAsync()
     {
+        status = StatusEnum.Carregando;
+        try
+        {
+            await CarregarDados();
+            status = StatusEnum.Finalizado;
+        }
+        catch
+        {
+            status = StatusEnum.Error;
+        }
 
-        var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value.ToString();
-
-        Console.WriteLine($"Value changed to {str}");
     }
-    
-    void OnClick(string buttonName)
+
+    async Task CarregarDados()
     {
-        Console.WriteLine($"{buttonName} clicked");
+        await CarregarTaxa();
+        await BuscarInformacaoBNA();
+        await CarregarListaBancos();
+        await CarregarDataAtaulizacao();
+    }
+
+    async Task CarregarDataAtaulizacao()
+    {
+        var str = await JS.InvokeAsync<string>("ObterDataActualizacao");
+        if (str?.Length > 0)
+            dataActualizacao = "Data da cotação: " + str;
+    }
+
+    async Task CarregarTaxa()
+    {
+        var strValue = await JS.InvokeAsync<string>("getItem", "taxa");
+        if (!(strValue?.Length > 0)) return;
+        model.Taxa = decimal.Parse(strValue);
+    }
+
+    async Task BuscarInformacaoBNA()
+    {
+        var dados = await Http.GetFromJsonAsync<dynamic[]>(Settings.UrlBna);
+        if (dados?.Count() > 0)
+        {
+            var dado = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(dados[0]);
+            var strHtml = $"{dado["Taxas"]}";
+            await JS.InvokeVoidAsync("SetDomHtml", strHtml);
+        }
+
+    }
+
+    async Task CarregarListaBancos()
+    {
+        var strBancos = await JS.InvokeAsync<string>("ObterListaDeBancos");
+
+        if (!(strBancos?.Length > 0)) return;
+
+        bancos = strBancos.Split(";");
+
+    }
+
+    async Task OnTaxa(decimal value)
+    {
+
+        var str = value.ToString();
+        await JS.InvokeVoidAsync("setItem", "taxa", str);
+
+    }
+
+    async Task OnKwanza(decimal value)
+    {
+        if (model.kwanzaEuro == 0) return;
+
+        model.kwanza = value;
+
+        if (value == 0) return;
+
+        model.Euro = model.kwanza / model.kwanzaEuroTaxa;
+
+        if (model.Taxa == 0) return;
+
+        valorCalculado = $"Valor Calculado em: {(Math.Round(model.kwanza / model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
+
+
+    }
+
+
+    async Task OnEuro(decimal value)
+    {
+        if (model.kwanzaEuro == 0) return;
+        model.Euro = value;
+        if (value == 0) return;
+
+        model.kwanza = model.Euro * model.kwanzaEuro;
+
+        if (model.Taxa == 0) return;
+
+        valorCalculado = $"Valor Calculado em: {(Math.Round(model.Euro * model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Kz.";
+
+    }
+    async Task OnChangeBanco(object value)
+    {
+        var taxa = await JS.InvokeAsync<string>("ObterValorDoEuro", value.ToString());
+
+        model.kwanzaEuro = decimal.Parse(taxa.Replace(",", "."), CultureInfo.InvariantCulture);
+
+    }
+
+    async Task OnClick()
+    {
+        await BuscarInformacaoBNA();
+        await CarregarListaBancos();
+        await InvokeAsync(StateHasChanged);
+        Console.WriteLine("Atualizado...");
     }
   }

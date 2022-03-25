@@ -8,14 +8,23 @@
         public decimal kwanzaEuro { get; set; }
         public decimal kwanzaEuroTaxa{ get {
 
-                if(Euro == 0) return 0;
-                var calc = Math.Round((kwanza + (kwanza * Taxa)) / Euro, 2);
+                if(kwanzaEuro == 0) return 0;
+            
+                if(Taxa == 0 || kwanza==0) return kwanzaEuro;
+
+                var calc = (kwanza - (kwanza * (Taxa / 100))) / kwanzaEuro;
+
+                calc = kwanza / calc;
+
+
+                 calc = Math.Round(calc, 2);
                 if (calc == 0) return kwanzaEuro;
 
                 return calc;
 
             }
         }
+
 
     }
 }

@@ -1828,25 +1828,27 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\jaels\\.nuget\\packages\\": {},
+    "C:\\Users\\jaelson.cunha\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
-    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {}
+    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Projetos\\CKZBNA.WEB\\CKZBNA.WEB\\CKZBNA.WEB.csproj",
+      "projectUniqueName": "C:\\Dev\\ConverteKzBnaBlazor\\CKZBNA.WEB\\CKZBNA.WEB\\CKZBNA.WEB.csproj",
       "projectName": "CKZBNA.WEB",
-      "projectPath": "C:\\Projetos\\CKZBNA.WEB\\CKZBNA.WEB\\CKZBNA.WEB.csproj",
-      "packagesPath": "C:\\Users\\jaels\\.nuget\\packages\\",
-      "outputPath": "C:\\Projetos\\CKZBNA.WEB\\CKZBNA.WEB\\obj\\",
+      "projectPath": "C:\\Dev\\ConverteKzBnaBlazor\\CKZBNA.WEB\\CKZBNA.WEB\\CKZBNA.WEB.csproj",
+      "packagesPath": "C:\\Users\\jaelson.cunha\\.nuget\\packages\\",
+      "outputPath": "C:\\Dev\\ConverteKzBnaBlazor\\CKZBNA.WEB\\CKZBNA.WEB\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\jaels\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jaelson.cunha\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
@@ -1855,9 +1857,7 @@
         "net6.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://www.nuget.org/api/v2/": {}
       },
       "frameworks": {
         "net6.0": {
@@ -1899,12 +1899,6 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
-            "version": "[6.0.3, 6.0.3]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"

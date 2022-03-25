@@ -2,7 +2,7 @@
 {
     public static class Settings
     {
-        public static string UrlBna { get; set; }
+        public static string UrlBna { get; private set; }
 
         static Settings()
         {
