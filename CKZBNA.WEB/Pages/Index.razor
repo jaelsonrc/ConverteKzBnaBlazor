@@ -8,58 +8,59 @@
     @if (status == StatusEnum.Finalizado)
     {
         <div class="row mb-3">
-        <div class="col-12 d-flex align-items-center">
-            <h1 class="m-0">Convert Kwanza BNA</h1>
-            <RadzenButton Click=@(async args => await OnClick()) Class="btn btn-success ml-3"><RadzenIcon Icon="cached" /> Actualizar</RadzenButton>
-        </div>
-    </div>
-
-    <div class="row">
-
-        <div class="col-md-6 col-lg-4 col-xl-3 p-3">
-            <RadzenLabel Text="Selecione o banco" Component="dpBanco" />
-            <RadzenDropDown Name="dpBanco" AllowClear="true" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
-                        Placeholder="Selecione..." Data="@bancos" Change="@OnChangeBanco" />
+            <div class="col-12 d-flex align-items-center">
+                <h1 class="m-0">Convert Kwanza BNA</h1>
+                <RadzenButton Click=@(async args => await OnClick()) Class="btn btn-success ml-3"><RadzenIcon Icon="cached" /> Actualizar</RadzenButton>
+            </div>
         </div>
 
-        <div class="col-md-6 col-lg-4 col-xl-3 p-3">
-            <RadzenLabel Text="Taxa %" Component="taxa" />
-            <RadzenNumeric Name="taxa" TValue="decimal" Format="0.00" @bind-Value=@model.Taxa Class="mr-1 form-control" Change="@OnTaxa" />
+        <div class="row">
+
+            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+                <RadzenLabel Text="Selecione o banco" Component="dpBanco" />
+                <RadzenDropDown Name="dpBanco" AllowClear="true" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
+                            Placeholder="Selecione..." Data="@bancos" Change="@OnChangeBanco" />
+            </div>
+
+            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+                <RadzenLabel Text="Taxa %" Component="taxa" />
+                <RadzenNumeric Name="taxa" TValue="decimal" Format="0.00" @bind-Value=@model.Taxa Class="mr-1 form-control" Change="@OnTaxa" />
+            </div>
+
         </div>
 
-    </div>
+        <div class="row">
+            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+                <RadzenLabel Text="Valor em KZ" Component="valorKwanza" />
+                <RadzenNumeric TValue="decimal" Name="valorKwanza" Format="#,#0.00" Change="@OnKwanza" @bind-Value=@model.kwanza Class="mr-1 form-control" />
+            </div>
 
-    <div class="row">
-        <div class="col-md-6 col-lg-4 col-xl-3 p-3">
-            <RadzenLabel Text="Valor em KZ" Component="valorKwanza" />
-            <RadzenNumeric TValue="decimal" Name="valorKwanza" Format="#,#0.00" Change="@OnKwanza" @bind-Value=@model.kwanza Class="mr-1 form-control" />
+            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+                <RadzenLabel Text="Valor em Euro" Component="valorEuro" />
+                <RadzenNumeric Name="valorEuro" TValue="decimal" Format="#,#0.00" Change="@OnEuro" @bind-Value=@model.Euro Class="mr-1 form-control" />
+            </div>
         </div>
 
-        <div class="col-md-6 col-lg-4 col-xl-3 p-3">
-            <RadzenLabel Text="Valor em Euro" Component="valorEuro" />
-            <RadzenNumeric Name="valorEuro" TValue="decimal" Format="#,#0.00" Change="@OnEuro" @bind-Value=@model.Euro Class="mr-1 form-control" />
-        </div>
-    </div>
+        <div class="row">
+            <div class="12 border-bottom pt-2 pb-2">
+                <p><strong>Data da cotação:</strong> @dataActualizacao</p>
+            </div>
 
-    <div class="row">
-        <div class="12 border-bottom pt-2 pb-2">
-            <p><strong>Data da cotação:</strong> @dataActualizacao</p>
-        </div>
+            <div class="12 border-bottom pt-2 pb-2">
+                <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO:</strong> <span class="badge bg-success">@model.kwanzaEuro KZ</span></p>
+            </div>
 
-        <div class="12 border-bottom pt-2 pb-2">
-            <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO:</strong> <span class="badge bg-success">@model.kwanzaEuro KZ</span></p>
-        </div>
+            <div class="12 border-bottom pt-2 pb-2">
+                <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO com taxas:</strong> <span class="badge bg-primary">@model.kwanzaEuroTaxa KZ</span></p>
+            </div>
 
-        <div class="12 border-bottom pt-2 pb-2">
-            <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO com taxas:</strong> <span class="badge bg-primary">@model.kwanzaEuroTaxa KZ</span></p>
+            @if (valorCalculado.Length > 0)
+            {
+                <div class="12 border-bottom pt-2 pb-2">
+                    <p><strong>Valor Calculado em:</strong> @valorCalculado</p>
+                </div>
+            }
         </div>
-
-        @if(valorCalculado.Length > 0){
-        <div class="12 border-bottom pt-2 pb-2">
-            <p><strong>Valor Calculado em:</strong> @valorCalculado</p>
-        </div>
-        }
-    </div>       
     }
     else if (status == StatusEnum.Carregando)
     {
@@ -73,7 +74,7 @@
     {
         <div class="row">
             <div class="col-12">
-                 <span class="alert alert-danger">Erro ao carregar os dados: @msg</span>
+                <span class="alert alert-danger">Erro ao carregar os dados: @msg</span>
             </div>
         </div>
     }
@@ -99,7 +100,7 @@
             await CarregarDados();
             status = StatusEnum.Finalizado;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             status = StatusEnum.Error;
             msg = ex.Message;
@@ -124,42 +125,68 @@
 
     async Task CarregarTaxa()
     {
-        try{
-                 var strValue = await JS.InvokeAsync<string>("getItem", "taxa");
-                if (!(strValue?.Length > 0)) return;
-                model.Taxa = decimal.Parse(strValue); 
-        }catch{}
-  
-    }
-
-    async Task BuscarInformacaoBNA()
-    {
-        var dados = await Http.GetFromJsonAsync<dynamic[]>(Settings.UrlBna);
-        if (dados?.Count() > 0)
+        try
         {
-            var dado = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(dados[0]);
-            var strHtml = $"{dado["Taxas"]}";
-            await JS.InvokeVoidAsync("SetDomHtml", strHtml);
+            var strValue = await JS.InvokeAsync<string>("getItem", "taxa");
+            if (!(strValue?.Length > 0)) return;
+            model.Taxa = decimal.Parse(strValue);
+        }
+        catch (Exception ex)
+        {
+            msg += " linha 133 - " + ex.Message;
+
         }
 
     }
 
+    async Task BuscarInformacaoBNA()
+    {
+        try
+        {
+            var dados = await Http.GetFromJsonAsync<dynamic[]>(Settings.UrlBna);
+            if (dados?.Count() > 0)
+            {
+                var dado = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(dados[0]);
+                var strHtml = $"{dado["Taxas"]}";
+                await JS.InvokeVoidAsync("SetDomHtml", strHtml);
+            }
+        }
+        catch (Exception ex)
+        {
+            msg += " linha 151 - " + ex.Message;
+
+        }
+    }
+
     async Task CarregarListaBancos()
     {
-        var strBancos = await JS.InvokeAsync<string>("ObterListaDeBancos");
+        try
+        {
+            var strBancos = await JS.InvokeAsync<string>("ObterListaDeBancos");
 
-        if (!(strBancos?.Length > 0)) return;
+            if (!(strBancos?.Length > 0)) return;
 
-        bancos = strBancos.Split(";");
+            bancos = strBancos.Split(";");
+        }
+        catch (Exception ex)
+        {
+            msg += " linha 166 - " + ex.Message;
 
+        }
     }
 
     async Task OnTaxa(decimal value)
     {
+        try
+        {
+            var str = value.ToString();
+            await JS.InvokeVoidAsync("setItem", "taxa", str);
+        }
+        catch (Exception ex)
+        {
+            msg += " linha 178 - " + ex.Message;
 
-        var str = value.ToString();
-        await JS.InvokeVoidAsync("setItem", "taxa", str);
-
+        }
     }
 
     async Task OnKwanza(decimal value)
@@ -195,11 +222,22 @@
     }
     async Task OnChangeBanco(object value)
     {
-        if (value == null || value.ToString().Length == 0) return;
-        var taxa = await JS.InvokeAsync<string>("ObterValorDoEuro", value.ToString());
 
-        model.kwanzaEuro = decimal.Parse(taxa.Replace(",", "."), CultureInfo.InvariantCulture);
+        if (value == null) return;
 
+        if (((string)value).Length == 0) return;
+
+        try
+        {
+            var taxa = await JS.InvokeAsync<string>("ObterValorDoEuro", value.ToString());
+
+            model.kwanzaEuro = decimal.Parse(taxa.Replace(",", "."), CultureInfo.InvariantCulture);
+        }
+        catch (Exception ex)
+        {
+            msg += " linha 227 - " + ex.Message;
+
+        }
     }
 
     async Task OnClick()
