@@ -1,72 +1,82 @@
 ﻿@page "/"
 @inject HttpClient Http
 @inject IJSRuntime JS
-<PageTitle>Index</PageTitle>
+<PageTitle>Convert Kwanza BNA</PageTitle>
 
 
 <RadzenCard>
-    <div>
-        <h3 class="h5">Painel</h3>
-        <RadzenButton Click=@(async args => await OnClick()) Icon="refresh" ButtonStyle="ButtonStyle.Light" />
-    </div>
-    <hr />
-
     @if (status == StatusEnum.Finalizado)
     {
-        <div class="row">
+        <div class="row mb-3">
+        <div class="col-12 d-flex align-items-center">
+            <h1 class="m-0">Convert Kwanza BNA</h1>
+            <RadzenButton Click=@(async args => await OnClick()) Class="btn btn-success ml-3"><RadzenIcon Icon="cached" /> Actualizar</RadzenButton>
+        </div>
+    </div>
 
-            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+    <div class="row">
 
-                <label>Selecione o banco</label>
-                <RadzenDropDown Name="dpBanco" AllowClear="true" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="w-100"
-                            Placeholder="Selecione..." Data="@bancos" Change="@OnChangeBanco" />
-
-            </div>
-
-            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
-
-                <label>Taxa %</label>
-                <RadzenNumeric TValue="decimal" Format="0.00" @bind-Value=@model.Taxa Class="mr-1" Change="@OnTaxa" />
-
-            </div>
-
+        <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+            <RadzenLabel Text="Selecione o banco" Component="dpBanco" />
+            <RadzenDropDown Name="dpBanco" AllowClear="true" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
+                        Placeholder="Selecione..." Data="@bancos" Change="@OnChangeBanco" />
         </div>
 
-        <div class="row">
-            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
-
-                <label>Valor em KZ</label>
-                <RadzenNumeric TValue="decimal" Format="#,#0.00" Change="@OnKwanza" @bind-Value=@model.kwanza Class="mr-1" />
-
-            </div>
-
-            <div class="col-md-6 col-lg-4 col-xl-3 p-3">
-
-                <label>Valor em Euro</label>
-                <RadzenNumeric TValue="decimal" Format="#,#0.00" Change="@OnEuro" @bind-Value=@model.Euro Class="mr-1" />
-
-            </div>
-
-
+        <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+            <RadzenLabel Text="Taxa %" Component="taxa" />
+            <RadzenNumeric Name="taxa" TValue="decimal" Format="0.00" @bind-Value=@model.Taxa Class="mr-1 form-control" Change="@OnTaxa" />
         </div>
-        <br />
-        <h1>@dataActualizacao</h1>
-        <h1>Valor do EURO: @model.kwanzaEuro KZ</h1>
-        <h1>Valor do EURO C/TAXA: @model.kwanzaEuroTaxa KZ</h1>
-        <h1>@valorCalculado</h1>
 
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+            <RadzenLabel Text="Valor em KZ" Component="valorKwanza" />
+            <RadzenNumeric TValue="decimal" Name="valorKwanza" Format="#,#0.00" Change="@OnKwanza" @bind-Value=@model.kwanza Class="mr-1 form-control" />
+        </div>
+
+        <div class="col-md-6 col-lg-4 col-xl-3 p-3">
+            <RadzenLabel Text="Valor em Euro" Component="valorEuro" />
+            <RadzenNumeric Name="valorEuro" TValue="decimal" Format="#,#0.00" Change="@OnEuro" @bind-Value=@model.Euro Class="mr-1 form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="12 border-bottom pt-2 pb-2">
+            <p><strong>Data da cotação:</strong> @dataActualizacao</p>
+        </div>
+
+        <div class="12 border-bottom pt-2 pb-2">
+            <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO:</strong> <span class="badge bg-success">@model.kwanzaEuro KZ</span></p>
+        </div>
+
+        <div class="12 border-bottom pt-2 pb-2">
+            <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO com taxas:</strong> <span class="badge bg-primary">@model.kwanzaEuroTaxa KZ</span></p>
+        </div>
+
+        @if(valorCalculado.Length > 0){
+        <div class="12 border-bottom pt-2 pb-2">
+            <p><strong>Valor Calculado em:</strong> @valorCalculado</p>
+        </div>
+        }
+    </div>       
     }
     else if (status == StatusEnum.Carregando)
     {
-        <h1>Processando...</h1>
+        <div class="row">
+            <div class="col-12">
+                <span class="alert alert-primary">Processando...</span>
+            </div>
+        </div>
     }
     else
     {
-        <h1>Errao ao carregar os dados...</h1>
+        <div class="row">
+            <div class="col-12">
+                 <span class="alert alert-danger">Erro ao carregar os dados...</span>
+            </div>
+        </div>
     }
-
-
-
 </RadzenCard>
 
 
@@ -107,7 +117,7 @@
     {
         var str = await JS.InvokeAsync<string>("ObterDataActualizacao");
         if (str?.Length > 0)
-            dataActualizacao = "Data da cotação: " + str;
+            dataActualizacao = str;
     }
 
     async Task CarregarTaxa()
@@ -159,7 +169,7 @@
 
         if (model.Taxa == 0) return;
 
-        valorCalculado = $"Valor Calculado em: {(Math.Round(model.kwanza / model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
+        valorCalculado = $"{(Math.Round(model.kwanza / model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
 
 
     }
@@ -175,11 +185,12 @@
 
         if (model.Taxa == 0) return;
 
-        valorCalculado = $"Valor Calculado em: {(Math.Round(model.Euro * model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Kz.";
+        valorCalculado = $"{(Math.Round(model.Euro * model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Kz.";
 
     }
     async Task OnChangeBanco(object value)
     {
+        if (value == null || value.ToString().Length == 0) return;
         var taxa = await JS.InvokeAsync<string>("ObterValorDoEuro", value.ToString());
 
         model.kwanzaEuro = decimal.Parse(taxa.Replace(",", "."), CultureInfo.InvariantCulture);
