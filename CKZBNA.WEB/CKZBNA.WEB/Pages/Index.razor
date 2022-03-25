@@ -73,7 +73,7 @@
     {
         <div class="row">
             <div class="col-12">
-                 <span class="alert alert-danger">Erro ao carregar os dados...</span>
+                 <span class="alert alert-danger">Erro ao carregar os dados: @msg</span>
             </div>
         </div>
     }
@@ -89,6 +89,7 @@
     Eurokwanza model = new Eurokwanza();
     StatusEnum status = StatusEnum.Finalizado;
     string dataActualizacao = string.Empty;
+    string msg = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,9 +99,10 @@
             await CarregarDados();
             status = StatusEnum.Finalizado;
         }
-        catch
+        catch(Exception ex)
         {
             status = StatusEnum.Error;
+            msg = ex.Message;
         }
 
     }
@@ -122,9 +124,12 @@
 
     async Task CarregarTaxa()
     {
-        var strValue = await JS.InvokeAsync<string>("getItem", "taxa");
-        if (!(strValue?.Length > 0)) return;
-        model.Taxa = decimal.Parse(strValue);
+        try{
+                 var strValue = await JS.InvokeAsync<string>("getItem", "taxa");
+                if (!(strValue?.Length > 0)) return;
+                model.Taxa = decimal.Parse(strValue); 
+        }catch{}
+  
     }
 
     async Task BuscarInformacaoBNA()
@@ -199,8 +204,16 @@
 
     async Task OnClick()
     {
-        await BuscarInformacaoBNA();
-        await CarregarListaBancos();
+        status = StatusEnum.Carregando;
+        try
+        {
+            await CarregarDados();
+            status = StatusEnum.Finalizado;
+        }
+        catch
+        {
+            status = StatusEnum.Error;
+        }
         await InvokeAsync(StateHasChanged);
         Console.WriteLine("Atualizado...");
     }

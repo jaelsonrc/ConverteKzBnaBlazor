@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "M3CpWmbJld8AIVjuhxVTTx0ICqs1VX4WJT1WcTxK6i4=",
+  "Hash": "SG+Cke6T3ovmhhyAYwsdSM2cdJqzBCY/ZumIwWUPm2w=",
   "Source": "CKZBNA.WEB",
   "BasePath": "/",
   "Mode": "Root",
@@ -7242,6 +7242,23 @@
       "OriginalItemSpec": "wwwroot\\index.html"
     },
     {
+      "Identity": "C:\\Dev\\ConverteKzBnaBlazor\\CKZBNA.WEB\\CKZBNA.WEB\\wwwroot\\js\\script.js",
+      "SourceId": "CKZBNA.WEB",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Dev\\ConverteKzBnaBlazor\\CKZBNA.WEB\\CKZBNA.WEB\\wwwroot\\",
+      "BasePath": "/",
+      "RelativePath": "js/script.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\script.js"
+    },
+    {
       "Identity": "C:\\Dev\\ConverteKzBnaBlazor\\CKZBNA.WEB\\CKZBNA.WEB\\wwwroot\\manifest.json",
       "SourceId": "CKZBNA.WEB",
       "SourceType": "Discovered",
@@ -7274,23 +7291,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\sample-data\\weather.json"
-    },
-    {
-      "Identity": "C:\\Dev\\ConverteKzBnaBlazor\\CKZBNA.WEB\\CKZBNA.WEB\\wwwroot\\script.js",
-      "SourceId": "CKZBNA.WEB",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Dev\\ConverteKzBnaBlazor\\CKZBNA.WEB\\CKZBNA.WEB\\wwwroot\\",
-      "BasePath": "/",
-      "RelativePath": "script.js",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\script.js"
     },
     {
       "Identity": "C:\\Users\\jaelson.cunha\\.nuget\\packages\\radzen.blazor\\3.16.7\\staticwebassets\\css\\dark.css",

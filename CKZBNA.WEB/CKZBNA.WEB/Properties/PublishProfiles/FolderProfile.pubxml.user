@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Publish\NET6\CKZBNA</_PublishTargetUrl>
+    <History>True|2022-03-25T13:55:50.3904280Z;True|2022-03-25T14:48:34.6158074+01:00;True|2022-03-25T14:45:41.5902531+01:00;True|2022-03-25T14:39:50.8411274+01:00;True|2022-03-25T14:28:37.5772547+01:00;True|2022-03-25T14:25:35.7995266+01:00;True|2022-03-25T14:18:23.3963663+01:00;True|2022-03-25T14:12:35.9988783+01:00;True|2022-03-25T14:11:44.1263199+01:00;True|2022-03-25T14:07:10.5526993+01:00;True|2022-03-25T11:52:33.5720390+01:00;</History>
+  </PropertyGroup>
+</Project>
