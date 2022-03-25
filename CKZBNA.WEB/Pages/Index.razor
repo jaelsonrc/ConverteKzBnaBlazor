@@ -1,15 +1,22 @@
 ﻿@page "/"
-@inject HttpClient Http
-@inject JsServices js
+
+@inject EuroKwanzaViewModel vm
 <PageTitle>Convert Kwanza BNA</PageTitle>
 
 
 <RadzenCard>
-    @if (status == StatusEnum.Finalizado)
+    @if (vm.Status == StatusEnum.Carregando)
     {
+        <div class="row">
+            <div class="col-12">
+                <span class="alert alert-primary">Processando...</span>
+            </div>
+        </div>
+
+    }else if (vm.Status == StatusEnum.Finalizado) {
         <div class="row mb-3">
             <div class="col-12 d-md-flex align-items-center">
-                <h1 class="m-0 h3">Convert Kwanza BNA <small class="text-muted d-block">Actualizado em @model.DataBna</small></h1>
+                <h1 class="m-0 h3">Convert Kwanza BNA <small class="text-muted d-block">Actualizado em @vm.Model.DataBna</small></h1>
                 <RadzenButton Click=@(async args => await OnClick()) Class="btn btn-success ml-md-3 mt-md-0 mt-3"><RadzenIcon Icon="cached" /> Actualizar</RadzenButton>
             </div>
         </div>
@@ -18,13 +25,13 @@
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
                 <RadzenLabel Text="Selecione o banco" Component="dpBanco" />
-                <RadzenDropDown Name="dpBanco" AllowClear="true"  @bind-Value="@model.Banco" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
-                            Placeholder="Selecione..." Data="@bancos" Change="@OnChangeBanco" />
+                <RadzenDropDown Name="dpBanco" AllowClear="true"  @bind-Value="@vm.Model.Banco" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
+                            Placeholder="Selecione..." Data="@vm.Bancos" Change="@vm.OnChangeBanco" />
             </div>
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
                 <RadzenLabel Text="Taxa %" Component="taxa" />
-                <RadzenNumeric Name="taxa" TValue="decimal" Format="0.00" Step="0.1" @bind-Value=@model.Taxa Class="mr-1 form-control" Change="@OnTaxa" />
+                <RadzenNumeric Name="taxa" TValue="decimal" Format="0.00" Step="0.1" @bind-Value=@vm.Model.Taxa Class="mr-1 form-control" Change="@vm.OnTaxa" />
             </div>
 
         </div>
@@ -32,45 +39,38 @@
         <div class="row">
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
                 <RadzenLabel Text="Valor em KZ" Component="valorKwanza" />
-                <RadzenNumeric TValue="decimal" Name="valorKwanza" Format="#,#0.00" Change="@OnKwanza" @bind-Value=@model.kwanza Class="mr-1 form-control" />
+                <RadzenNumeric TValue="decimal" Name="valorKwanza" Format="#,#0.00" Change="@vm.OnKwanza" @bind-Value=@vm.Model.kwanza Class="mr-1 form-control" />
             </div>
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
                 <RadzenLabel Text="Valor em Euro" Component="valorEuro" />
-                <RadzenNumeric Name="valorEuro" TValue="decimal" Format="#,#0.00" Change="@OnEuro" @bind-Value=@model.Euro Class="mr-1 form-control" />
+                <RadzenNumeric Name="valorEuro" TValue="decimal" Format="#,#0.00" Change="@vm.OnEuro" @bind-Value=@vm.Model.Euro Class="mr-1 form-control" />
             </div>
         </div>
 
         <div class="row">
             <div class="12 border-bottom pt-2 pb-2">
-                <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO:</strong> <span class="badge bg-success">@model.kwanzaEuro KZ</span></p>
+                <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO:</strong> <span class="badge bg-success">@vm.Model.kwanzaEuro KZ</span></p>
             </div>
 
             <div class="12 border-bottom pt-2 pb-2">
-                <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO com taxas:</strong> <span class="badge bg-primary">@model.kwanzaEuroTaxa KZ</span></p>
+                <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO com taxas:</strong> <span class="badge bg-primary">@vm.Model.kwanzaEuroTaxa KZ</span></p>
             </div>
 
-            @if (valorCalculado.Length > 0)
+            @if (vm.ValorCalculado.Length > 0)
             {
                 <div class="12 pt-2">
-                    <p><strong>Valor Calculado em:</strong> @valorCalculado</p>
+                    <p><strong>Valor Calculado em:</strong> @vm.ValorCalculado</p>
                 </div>
             }
+
         </div>
-    }
-    else if (status == StatusEnum.Carregando)
-    {
-        <div class="row">
-            <div class="col-12">
-                <span class="alert alert-primary">Processando...</span>
-            </div>
-        </div>
-    }
+    }  
     else
     {
         <div class="row">
             <div class="col-12">
-                <span class="alert alert-danger">Erro ao carregar os dados: @msg</span>
+                <span class="alert alert-danger">Erro ao carregar os dados: @vm.Mensagem</span>
             </div>
         </div>
     }
@@ -81,149 +81,15 @@
 @code {
 
 
-    Eurokwanza model = new Eurokwanza();
-    IEnumerable<string>? bancos;
-    string valorCalculado = string.Empty;
-    StatusEnum status = StatusEnum.Finalizado;
-    string msg = string.Empty;
-
     protected override async Task OnInitializedAsync()
     {
-        status = StatusEnum.Carregando;
-        try
-        {
-            await CarregarDados();
-            status = StatusEnum.Finalizado;
-        }
-        catch (Exception ex)
-        {
-            status = StatusEnum.Error;
-            msg = ex.Message;
-        }
-
+        await vm.CarregarDados();
     }
-
-    async Task CarregarDados()
-    {
-        model.Taxa = await js.GetTaxa();
-
-        await BuscarInformacaoBNA();
-        await CarregarListaBancos();
-
-        model.DataBna = await js.GetDataBNA();
-    }
-
-
-
-    async Task BuscarInformacaoBNA()
-    {
-        var dados = await Http.GetFromJsonAsync<BNA[]>(Settings.UrlBna);
-        if (dados?.Length > 0) 
-            await js.SetConteudoBna(dados[0].Taxas);    
-
-    }
-
-    async Task CarregarListaBancos()
-    {
-        bancos = await js.GetBancos();
-        model.Banco = await js.GetBanco();
-        await ObterValorEuro(model.Banco);     
-    }
-
-    async Task OnTaxa(decimal value)
-    {
-
-        model.Taxa = value;
-        await js.SetTaxa(value);
-
-        if (valorCalculado.Contains("Kz"))
-        {
-            CalcEuro();
-
-        }
-        else if (valorCalculado.Contains("Euro"))
-        {
-            CalcKwanza();
-        }
-
-
-
-    }
-
-    void OnKwanza(decimal value)
-    {
-        if (model.kwanzaEuro == 0) return;
-
-        model.kwanza = value;
-
-        if (value == 0) return;
-
-        model.Euro = model.kwanza / model.kwanzaEuroTaxa;
-
-        CalcKwanza();
-
-    }
-
-    void CalcKwanza()
-    {
-        if (model.Taxa == 0) return;
-
-        valorCalculado = $"{(Math.Round(model.kwanza / model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
-    }
-
-    void OnEuro(decimal value)
-    {
-        if (model.kwanzaEuro == 0) return;
-        model.Euro = value;
-        if (value == 0) return;
-
-        model.kwanza = model.Euro * model.kwanzaEuro;
-
-        CalcEuro();
-
-    }
-
-    void CalcEuro()
-    {
-        if (model.Taxa == 0) return;
-
-        valorCalculado = $"{(Math.Round(model.Euro * model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Kz.";
-    }
-
-
-    async Task OnChangeBanco(object value)
-    {
-
-        if (value == null) return;
-
-        if (((string)value).Length == 0) return;
-
-        await ObterValorEuro((string)value);
-
-    }
-
-    async Task ObterValorEuro(string banco)
-    {
-        if (string.IsNullOrWhiteSpace(banco)) return;
-
-       model.kwanzaEuro = await js.GetValorDoEuro(banco);
-       await js.SetBanco(banco);
-    
-    }
-
+   
     async Task OnClick()
     {
-        status = StatusEnum.Carregando;
-        try
-        {
-            await CarregarDados();
-            status = StatusEnum.Finalizado;
-        }
-        catch
-        {
-            status = StatusEnum.Error;
-        }
+        await vm.OnActualizar();
         await InvokeAsync(StateHasChanged);
-
     }
+
   }

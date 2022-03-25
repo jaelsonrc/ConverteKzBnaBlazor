@@ -3,13 +3,13 @@ using System.Globalization;
 
 namespace CKZBNA.WEB.Services
 {
-    public class JsServices
+    public class JsService
     {
         private const string KEY_TAXA = "taxa";
         private const string KEY_BANCO = "bancoSelecionado";
 
         private readonly IJSRuntime _js;
-        public JsServices(IJSRuntime js)
+        public JsService(IJSRuntime js)
         {
             _js = js;
         }
