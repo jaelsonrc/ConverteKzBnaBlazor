@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inject HttpClient Http
-@inject IJSRuntime JS
+@inject JsServices js
 <PageTitle>Convert Kwanza BNA</PageTitle>
 
 
@@ -9,7 +9,7 @@
     {
         <div class="row mb-3">
             <div class="col-12 d-md-flex align-items-center">
-                <h1 class="m-0 h3">Convert Kwanza BNA <small class="text-muted d-block">Actualizado em @dataActualizacao</small></h1>
+                <h1 class="m-0 h3">Convert Kwanza BNA <small class="text-muted d-block">Actualizado em @model.DataBna</small></h1>
                 <RadzenButton Click=@(async args => await OnClick()) Class="btn btn-success ml-md-3 mt-md-0 mt-3"><RadzenIcon Icon="cached" /> Actualizar</RadzenButton>
             </div>
         </div>
@@ -18,7 +18,7 @@
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
                 <RadzenLabel Text="Selecione o banco" Component="dpBanco" />
-                <RadzenDropDown Name="dpBanco" AllowClear="true"  @bind-Value="@banco" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
+                <RadzenDropDown Name="dpBanco" AllowClear="true"  @bind-Value="@model.Banco" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
                             Placeholder="Selecione..." Data="@bancos" Change="@OnChangeBanco" />
             </div>
 
@@ -80,12 +80,11 @@
 
 @code {
 
-    IEnumerable<string> bancos;
-    string banco = string.Empty;
-    string valorCalculado = string.Empty;
+
     Eurokwanza model = new Eurokwanza();
+    IEnumerable<string>? bancos;
+    string valorCalculado = string.Empty;
     StatusEnum status = StatusEnum.Finalizado;
-    string dataActualizacao = string.Empty;
     string msg = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -106,117 +105,49 @@
 
     async Task CarregarDados()
     {
-        await CarregarTaxa();
+        model.Taxa = await js.GetTaxa();
+
         await BuscarInformacaoBNA();
         await CarregarListaBancos();
-        await CarregarDataAtaulizacao();
+
+        model.DataBna = await js.GetDataBNA();
     }
 
-    async Task CarregarDataAtaulizacao()
-    {
-        try
-        {
-            var str = await JS.InvokeAsync<string>("ObterDataActualizacao");
-            if (str?.Length > 0)
-                dataActualizacao = str;
-        }
-        catch (Exception ex)
-        {
-            msg += " linha 129 - " + ex.Message;
-            Console.WriteLine(msg);
-            throw ex;
 
-        }
-    }
-
-    async Task CarregarTaxa()
-    {
-        try
-        {
-            var strValue = await JS.InvokeAsync<string>("getItem", "taxa");
-            if (!(strValue?.Length > 0)) return;
-            model.Taxa = decimal.Parse(strValue);
-        }
-        catch (Exception ex)
-        {
-            msg += " linha 145 - " + ex.Message;
-                 Console.WriteLine(msg);
-            throw ex;
-
-        }
-
-    }
 
     async Task BuscarInformacaoBNA()
     {
-        try
-        {
-            var dados = await Http.GetFromJsonAsync<BNA[]>(Settings.UrlBna);
+        var dados = await Http.GetFromJsonAsync<BNA[]>(Settings.UrlBna);
+        if (dados?.Length > 0) 
+            await js.SetConteudoBna(dados[0].Taxas);    
 
-            if (dados?.Length > 0)
-            {
-
-                await JS.InvokeVoidAsync("SetDomHtml", dados[0].Taxas);
-            }
-        }
-        catch (Exception ex)
-        {
-            msg += " linha 169 - " + ex.Message;
-                 Console.WriteLine(msg);
-            throw ex;
-        }
     }
 
     async Task CarregarListaBancos()
     {
-        try
-        {
-            var strBancos = await JS.InvokeAsync<string>("ObterListaDeBancos");
-
-            if (!(strBancos?.Length > 0)) return;
-
-            bancos = strBancos.Split(";");
-
-            var strBanco = await JS.InvokeAsync<string>("getItem", "banco");
-            if (strBancos?.Length > 0)
-            {
-                banco = strBanco;
-                await  ObterValorEuro(strBanco);
-            }
-    
-        }
-        catch (Exception ex)
-        {
-            msg += " linha 186 - " + ex.Message;
-                 Console.WriteLine(msg);
-            throw ex;
-        }
+        bancos = await js.GetBancos();
+        model.Banco = await js.GetBanco();
+        await ObterValorEuro(model.Banco);     
     }
 
     async Task OnTaxa(decimal value)
     {
-        try
+
+        model.Taxa = value;
+        await js.SetTaxa(value);
+
+        if (valorCalculado.Contains("Kz"))
         {
-            var str = value.ToString();
-            await JS.InvokeVoidAsync("setItem", "taxa", str);
-
-            if (valorCalculado.Contains("Kz"))
-            {
-                CalcEuro();
-
-            }
-            else if (valorCalculado.Contains("Euro"))
-            {
-                CalcKwanza();
-            }
+            CalcEuro();
 
         }
-        catch (Exception ex)
+        else if (valorCalculado.Contains("Euro"))
         {
-            msg += " linha 200 - " + ex.Message;
-                 Console.WriteLine(msg);
-            throw ex;
+            CalcKwanza();
         }
+
+
+
     }
 
     void OnKwanza(decimal value)
@@ -273,21 +204,11 @@
 
     async Task ObterValorEuro(string banco)
     {
-          try
-        {
-            var taxa = await JS.InvokeAsync<string>("ObterValorDoEuro", banco);
+        if (string.IsNullOrWhiteSpace(banco)) return;
 
-            model.kwanzaEuro = decimal.Parse(taxa.Replace(",", "."), CultureInfo.InvariantCulture);
-
-            await JS.InvokeVoidAsync("setItem", "banco", banco);
-        }
-        catch (Exception ex)
-        {
-            msg += " linha 251 - " + ex.Message;
-                 Console.WriteLine(msg);
-            throw ex;
-
-        }
+       model.kwanzaEuro = await js.GetValorDoEuro(banco);
+       await js.SetBanco(banco);
+    
     }
 
     async Task OnClick()

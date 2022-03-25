@@ -2,6 +2,8 @@
 {
     public class Eurokwanza
     {
+        public string Banco { get;set;}
+        public string DataBna { get; set; }
         public decimal Taxa { get; set; }
         public decimal Euro { get; set; }
         public decimal kwanza { get; set; }
