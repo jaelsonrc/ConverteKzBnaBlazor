@@ -18,7 +18,7 @@
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
                 <RadzenLabel Text="Selecione o banco" Component="dpBanco" />
-                <RadzenDropDown Name="dpBanco" AllowClear="true" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
+                <RadzenDropDown Name="dpBanco" AllowClear="true"  @bind-Value="@banco" TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" Class="form-control"
                             Placeholder="Selecione..." Data="@bancos" Change="@OnChangeBanco" />
             </div>
 
@@ -173,6 +173,14 @@
             if (!(strBancos?.Length > 0)) return;
 
             bancos = strBancos.Split(";");
+
+            var strBanco = await JS.InvokeAsync<string>("getItem", "banco");
+            if (strBancos?.Length > 0)
+            {
+                banco = strBanco;
+                await  ObterValorEuro(banco);
+            }
+    
         }
         catch (Exception ex)
         {
@@ -187,7 +195,7 @@
         {
             var str = value.ToString();
             await JS.InvokeVoidAsync("setItem", "taxa", str);
-            Console.WriteLine(valorCalculado);
+
             if (valorCalculado.Contains("Kz"))
             {
                 CalcEuro();
@@ -254,11 +262,19 @@
 
         if (((string)value).Length == 0) return;
 
-        try
+        await ObterValorEuro((string)value);
+
+    }
+
+    async Task ObterValorEuro(string banco)
+    {
+          try
         {
-            var taxa = await JS.InvokeAsync<string>("ObterValorDoEuro", value.ToString());
+            var taxa = await JS.InvokeAsync<string>("ObterValorDoEuro", banco);
 
             model.kwanzaEuro = decimal.Parse(taxa.Replace(",", "."), CultureInfo.InvariantCulture);
+
+            await JS.InvokeVoidAsync("setItem", "banco", banco);
         }
         catch (Exception ex)
         {
