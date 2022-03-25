@@ -153,16 +153,12 @@
     {
         try
         {
-            var dados = await Http.GetFromJsonAsync<dynamic[]>(Settings.UrlBna);
-            var str = await Http.GetStringAsync(Settings.UrlBna);
-            Console.WriteLine( str );
-            if (dados?.Count() > 0)
-            {
-                var dado = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(dados[0]);
-                var strHtml = $"{dado["Taxas"]}";
-                Console.WriteLine("invoke js");
-                await JS.InvokeVoidAsync("SetDomHtml", strHtml);
+            var dados = await Http.GetFromJsonAsync<BNA[]>(Settings.UrlBna);
 
+            if (dados?.Length > 0)
+            {
+                Console.WriteLine("invoke js");
+                await JS.InvokeVoidAsync("SetDomHtml", dados[0].Taxas);
             }
         }
         catch (Exception ex)
