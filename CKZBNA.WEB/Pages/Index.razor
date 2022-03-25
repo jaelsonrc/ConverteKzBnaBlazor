@@ -24,7 +24,7 @@
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
                 <RadzenLabel Text="Taxa %" Component="taxa" />
-                <RadzenNumeric Name="taxa" TValue="decimal" Format="0.00" @bind-Value=@model.Taxa Class="mr-1 form-control" Change="@OnTaxa" />
+                <RadzenNumeric Name="taxa" TValue="decimal" Format="0.00" Step="0.1" @bind-Value=@model.Taxa Class="mr-1 form-control" Change="@OnTaxa" />
             </div>
 
         </div>
@@ -157,7 +157,7 @@
 
             if (dados?.Length > 0)
             {
-                Console.WriteLine("invoke js");
+
                 await JS.InvokeVoidAsync("SetDomHtml", dados[0].Taxas);
             }
         }
@@ -191,6 +191,17 @@
         {
             var str = value.ToString();
             await JS.InvokeVoidAsync("setItem", "taxa", str);
+            Console.WriteLine(valorCalculado);
+            if (valorCalculado.Contains("Kz"))
+            {
+                CalcEuro();
+
+            }
+            else if (valorCalculado.Contains("Euro"))
+            {
+                CalcKwanza();
+            }
+
         }
         catch (Exception ex)
         {
@@ -199,7 +210,7 @@
         }
     }
 
-    async Task OnKwanza(decimal value)
+    void OnKwanza(decimal value)
     {
         if (model.kwanzaEuro == 0) return;
 
@@ -209,15 +220,18 @@
 
         model.Euro = model.kwanza / model.kwanzaEuroTaxa;
 
-        if (model.Taxa == 0) return;
-
-        valorCalculado = $"{(Math.Round(model.kwanza / model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
-
+        CalcKwanza();
 
     }
 
+    void CalcKwanza()
+    {
+        if (model.Taxa == 0) return;
 
-    async Task OnEuro(decimal value)
+        valorCalculado = $"{(Math.Round(model.kwanza / model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
+    }
+
+    void OnEuro(decimal value)
     {
         if (model.kwanzaEuro == 0) return;
         model.Euro = value;
@@ -225,11 +239,18 @@
 
         model.kwanza = model.Euro * model.kwanzaEuro;
 
+        CalcEuro();
+
+    }
+
+    void CalcEuro()
+    {
         if (model.Taxa == 0) return;
 
         valorCalculado = $"{(Math.Round(model.Euro * model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Kz.";
-
     }
+
+
     async Task OnChangeBanco(object value)
     {
 
@@ -264,6 +285,6 @@
             status = StatusEnum.Error;
         }
         await InvokeAsync(StateHasChanged);
-        Console.WriteLine("Atualizado...");
+
     }
   }
