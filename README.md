@@ -2,8 +2,8 @@
 
 Especificações
 
-. Radzen Components
-. Blazor WebApp
-. Requesições externas
-. Interoperabilidade com Javascript/JQUERY
-. Manipulaçao do DOM via JQUERY
+<br/> . Radzen Components
+<br/> . Blazor WebApp
+<br/> . Requesições externas
+<br/> . Interoperabilidade com Javascript/JQUERY
+<br/> . Manipulaçao do DOM via JQUERY
