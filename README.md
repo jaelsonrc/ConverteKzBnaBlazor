@@ -1,4 +1,4 @@
-# Converte Akz em Euro baseado na taxa de cambio do BNA
+# Converte Kwanza em Euro baseado na taxa de cambio do BNA
 
 Especificações
 
