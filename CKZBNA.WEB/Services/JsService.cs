@@ -7,6 +7,8 @@ namespace CKZBNA.WEB.Services
     {
         private const string KEY_TAXA = "taxa";
         private const string KEY_BANCO = "bancoSelecionado";
+        private const string KEY_EURO = "valorEuro";
+        private const string KEY_KWANZA = "valorKWANZA";
 
         private readonly IJSRuntime _js;
         public JsService(IJSRuntime js)
@@ -71,6 +73,34 @@ namespace CKZBNA.WEB.Services
         public async Task SetTaxa(decimal taxa)
         {
             await SetItem(KEY_TAXA, taxa.ToString());
+        }
+
+        public async Task<decimal> GetEuro()
+        {
+            var str = await GetItem(KEY_EURO);
+            if (!string.IsNullOrEmpty(str))
+                return decimal.Parse(str);
+
+            return 0M;
+        }
+
+        public async Task SetEuro(decimal value)
+        {
+            await SetItem(KEY_EURO, value.ToString());
+        }
+
+        public async Task<decimal> GetKwanza()
+        {
+            var str = await GetItem(KEY_KWANZA);
+            if (!string.IsNullOrEmpty(str))
+                return decimal.Parse(str);
+
+            return 0M;
+        }
+
+        public async Task SetKwanza(decimal value)
+        {
+            await SetItem(KEY_KWANZA, value.ToString());
         }
 
         public async Task SetConteudoBna(string strHtml)

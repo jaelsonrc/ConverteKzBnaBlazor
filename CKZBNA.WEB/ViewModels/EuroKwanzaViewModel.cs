@@ -57,6 +57,8 @@ namespace CKZBNA.WEB.ViewModels
             try
             {
                 Model.Taxa = await _js.GetTaxa();
+                Model.Euro = await _js.GetEuro();
+                Model.kwanza = await _js.GetKwanza();
 
                 await BuscarInformacaoBNA();
                 await CarregarListaBancos();
@@ -81,6 +83,8 @@ namespace CKZBNA.WEB.ViewModels
             if (Model.Taxa == 0) return;
 
             ValorCalculado = $"{(Math.Round(Model.kwanza / Model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
+
+
         }
 
         private void CalcEuro()
@@ -111,7 +115,7 @@ namespace CKZBNA.WEB.ViewModels
         }
 
 
-        public void OnKwanza(decimal value)
+        public async Task OnKwanza(decimal value)
         {
             if (Model.kwanzaEuro == 0) return;
 
@@ -123,10 +127,12 @@ namespace CKZBNA.WEB.ViewModels
 
             CalcKwanza();
 
+            await  _js.SetKwanza(value);
+            await _js.SetEuro(Model.Euro);
         }
 
 
-       public void OnEuro(decimal value)
+        public async Task OnEuro(decimal value)
         {
             if (Model.kwanzaEuro == 0) return;
             Model.Euro = value;
@@ -135,6 +141,9 @@ namespace CKZBNA.WEB.ViewModels
             Model.kwanza = Model.Euro * Model.kwanzaEuro;
 
             CalcEuro();
+
+            await _js.SetEuro(value);
+            await _js.SetKwanza(Model.kwanza);
 
         }
 
