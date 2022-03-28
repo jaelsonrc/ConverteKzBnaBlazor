@@ -27,6 +27,25 @@
             }
         }
 
+        public decimal kwanzaTaxa
+        {
+            get
+            {
+
+                if (kwanzaEuro == 0) return 0;
+
+                if (Taxa == 0 || kwanza == 0) return 0;
+
+                var calc = (kwanza * (Taxa / 100));
+                     
+
+                calc = Math.Round(calc, 2);
+                if (calc == 0) return 0;
+
+                return calc;
+
+            }
+        }
 
     }
 }

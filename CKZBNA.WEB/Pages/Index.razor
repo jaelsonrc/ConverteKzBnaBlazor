@@ -57,6 +57,13 @@
                 <p class="d-flex align-items-center"><strong class="mr-1">Valor do EURO com taxas:</strong> <span class="badge bg-primary">@vm.Model.kwanzaEuroTaxa KZ</span></p>
             </div>
 
+            @if (vm.Model.kwanzaTaxa > 0)
+            {
+                <div class="12 pt-2">
+                    <p><strong>Valor da taxa em:</strong> @vm.Model.kwanzaTaxa.ToMoeda() KZ</p>
+                </div>
+            }
+
             @if (vm.ValorCalculado.Length > 0)
             {
                 <div class="12 pt-2">
