@@ -44,7 +44,7 @@
 
             <div class="col-md-6 col-lg-4 col-xl-3 p-3">
                 <RadzenLabel Text="Valor em Euro" Component="valorEuro" />
-                <RadzenNumeric Name="valorEuro" TValue="decimal" Format="#,#0.00" Change="@vm.OnEuro" @bind-Value=@vm.Model.Euro Class="mr-1 form-control" />
+                <RadzenNumeric  Name="valorEuro" TValue="decimal" Format="#,#0.00" Change="@vm.OnEuro" @bind-Value=@vm.Model.Euro Class="mr-1 form-control" />
             </div>
         </div>
 
@@ -87,10 +87,12 @@
 
 @code {
 
+   
 
     protected override async Task OnInitializedAsync()
     {
         await vm.CarregarDados();
+   
     }
    
     async Task OnClick()

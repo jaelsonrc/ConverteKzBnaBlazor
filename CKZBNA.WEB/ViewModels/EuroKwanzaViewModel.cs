@@ -64,7 +64,11 @@ namespace CKZBNA.WEB.ViewModels
                 await CarregarListaBancos();
 
                 Model.DataBna = await _js.GetDataBNA();
+
+
+                
                 CalcKwanzaParaEuro();
+                
                 Status = StatusEnum.Finalizado;
             }
             catch (Exception ex)
@@ -157,6 +161,7 @@ namespace CKZBNA.WEB.ViewModels
 
             await ObterValorEuro((string)value);
 
+            await OnKwanza(Model.kwanza);
         }
 
 
