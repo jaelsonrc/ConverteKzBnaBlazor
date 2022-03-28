@@ -64,7 +64,7 @@ namespace CKZBNA.WEB.ViewModels
                 await CarregarListaBancos();
 
                 Model.DataBna = await _js.GetDataBNA();
-
+                CalcKwanzaParaEuro();
                 Status = StatusEnum.Finalizado;
             }
             catch (Exception ex)
@@ -78,7 +78,7 @@ namespace CKZBNA.WEB.ViewModels
 
         #region Metodo para calculos
 
-        private void CalcKwanza()
+        private void CalcKwanzaParaEuro()
         {
             if (Model.Taxa == 0) return;
 
@@ -87,7 +87,7 @@ namespace CKZBNA.WEB.ViewModels
 
         }
 
-        private void CalcEuro()
+        private void CalcEuroParaKwanza()
         {
             if (Model.Taxa == 0) return;
 
@@ -103,12 +103,12 @@ namespace CKZBNA.WEB.ViewModels
 
             if (ValorCalculado.Contains("Kz"))
             {
-                CalcEuro();
+                CalcEuroParaKwanza();
 
             }
             else if (ValorCalculado.Contains("Euro"))
             {
-                CalcKwanza();
+                CalcKwanzaParaEuro();
             }
 
 
@@ -125,7 +125,7 @@ namespace CKZBNA.WEB.ViewModels
 
             Model.Euro = Model.kwanza / Model.kwanzaEuroTaxa;
 
-            CalcKwanza();
+            CalcKwanzaParaEuro();
 
             await  _js.SetKwanza(value);
             await _js.SetEuro(Model.Euro);
@@ -140,7 +140,7 @@ namespace CKZBNA.WEB.ViewModels
 
             Model.kwanza = Model.Euro * Model.kwanzaEuro;
 
-            CalcEuro();
+            CalcEuroParaKwanza();
 
             await _js.SetEuro(value);
             await _js.SetKwanza(Model.kwanza);
