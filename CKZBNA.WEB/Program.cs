@@ -1,4 +1,5 @@
 using CKZBNA.WEB;
+using CKZBNA.WEB.Repositories;
 using CKZBNA.WEB.Services;
 using CKZBNA.WEB.ViewModels;
 using Microsoft.AspNetCore.Components.Web;
@@ -15,7 +16,9 @@ builder.Services.AddScoped<DialogService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<TooltipService>();
 builder.Services.AddScoped<ContextMenuService>();
+
 builder.Services.AddSingleton<JsService>();
+builder.Services.AddScoped<Repository>();
 builder.Services.AddScoped<EuroKwanzaViewModel>();
 
 await builder.Build().RunAsync();

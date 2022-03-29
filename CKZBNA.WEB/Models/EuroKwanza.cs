@@ -8,6 +8,7 @@
         public decimal Euro { get; set; }
         public decimal kwanza { get; set; }
         public decimal kwanzaEuro { get; set; }
+        public decimal? RealWise { get; set; }
         public decimal kwanzaEuroTaxa{ get {
 
                 if(kwanzaEuro == 0) return 0;

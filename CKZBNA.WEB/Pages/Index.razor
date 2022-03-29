@@ -70,6 +70,13 @@
                     <p><strong>Valor Calculado em:</strong> @vm.ValorCalculado</p>
                 </div>
             }
+            @if (vm.Model.RealWise > 0)
+            {
+                <div class="12 pt-2">
+                    <p><strong>Valor em Real pelo Wise:</strong> @vm.Model.RealWise</p>
+                </div>
+            }
+
 
         </div>
     }  

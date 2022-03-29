@@ -1,5 +1,6 @@
 ﻿using CKZBNA.WEB.Helpers;
 using CKZBNA.WEB.Models;
+using CKZBNA.WEB.Repositories;
 using CKZBNA.WEB.Services;
 using System.Net.Http.Json;
 
@@ -8,15 +9,15 @@ namespace CKZBNA.WEB.ViewModels
     public class EuroKwanzaViewModel
     {
         private readonly JsService _js;
-        private readonly HttpClient _http;
+        private readonly Repository _repository;
         public IEnumerable<string>? Bancos { get; private set; }
         public  Eurokwanza Model { get; private set; }
         public StatusEnum Status { get; private set; }
         public string Mensagem { get; private set; }
         public string ValorCalculado { get; private set; }
-        public EuroKwanzaViewModel(HttpClient http, JsService js)
+        public EuroKwanzaViewModel(Repository repository, JsService js)
         {
-            _http = http;
+            _repository = repository;
             _js = js;
             Model = new Eurokwanza();
             Mensagem= string.Empty;
@@ -26,9 +27,9 @@ namespace CKZBNA.WEB.ViewModels
         #region Metodos auxliar privados
         private async Task BuscarInformacaoBNA()
         {
-            var dados = await _http.GetFromJsonAsync<BNA[]>(Settings.UrlBna);
-            if (dados?.Length > 0)
-                await _js.SetConteudoBna(dados[0].Taxas);
+            var dados = await _repository.GetBNA();
+            if (!string.IsNullOrEmpty(dados))
+                await _js.SetConteudoBna(dados);
 
         }
 
@@ -82,13 +83,13 @@ namespace CKZBNA.WEB.ViewModels
 
         #region Metodo para calculos
 
-        private void CalcKwanzaParaEuro()
+        private async Task CalcKwanzaParaEuro()
         {
             if (Model.Taxa == 0) return;
 
             ValorCalculado = $"{(Math.Round(Model.kwanza / Model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
 
-
+            Model.RealWise =  await _repository.GetWise(Model.Euro);
         }
 
         private void CalcEuroParaKwanza()
@@ -133,6 +134,7 @@ namespace CKZBNA.WEB.ViewModels
 
             await  _js.SetKwanza(value);
             await _js.SetEuro(Model.Euro);
+       
         }
 
 
