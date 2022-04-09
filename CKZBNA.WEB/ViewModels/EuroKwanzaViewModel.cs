@@ -84,7 +84,7 @@ namespace CKZBNA.WEB.ViewModels
 
         private void CalcKwanzaParaEuro()
         {
-            if (Model.Taxa == 0) return;
+            if (Model.Taxa == 0 || Model.kwanzaEuroTaxa ==0) return;
 
             ValorCalculado = $"{(Math.Round(Model.kwanza / Model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Euro.";
 
@@ -93,7 +93,7 @@ namespace CKZBNA.WEB.ViewModels
 
         private void CalcEuroParaKwanza()
         {
-            if (Model.Taxa == 0) return;
+            if (Model.Taxa == 0 || Model.kwanzaEuroTaxa == 0) return;
 
             ValorCalculado = $"{(Math.Round(Model.Euro * Model.kwanzaEuroTaxa, 2)).ToString("#,#0.00")} Kz.";
         }
@@ -127,6 +127,7 @@ namespace CKZBNA.WEB.ViewModels
 
             if (value == 0) return;
 
+            if (Model.kwanzaEuroTaxa == 0) return;
             Model.Euro = Model.kwanza / Model.kwanzaEuroTaxa;
 
             CalcKwanzaParaEuro();
